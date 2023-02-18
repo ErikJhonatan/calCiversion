@@ -20,7 +20,7 @@ function addInversor() {
     } else {
         swal(
             "Te falta ingresar datos",
-            "Ingrese, un nombre y un valor, y vuela a intentarlo",
+            "Ingrese, un nombre y un valor, y vuelva a intentarlo",
             "error"
         );
         state = false;
@@ -144,7 +144,7 @@ function nextUtility() {
   } else {
     swal(
       "Te falta ingresar el nombre de la actividad",
-      "Ingrese, un nombre, y vuela a intentarlo",
+      "Ingrese, un nombre, y vuelva a intentarlo",
       "error"
     );
   }
@@ -184,7 +184,7 @@ function nextNumberInversors() {
   } else {
     swal(
       "Te falta ingresar la utilidad neta",
-      "Ingrese, un valor, y vuela a intentarlo",
+      "Ingrese, un valor, y vuelva a intentarlo",
       "error"
     );
   }
@@ -241,7 +241,7 @@ function renderNumberInversors() {
   } else {
     swal(
       "Te falta ingresar la cantidad de inversores",
-      "Ingrese, una cantidad, y vuela a intentarlo",
+      "Ingrese, una cantidad, y vuelva a intentarlo",
       "error"
     );
   }
