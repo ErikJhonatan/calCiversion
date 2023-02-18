@@ -183,7 +183,7 @@ function nextNumberInversors() {
     `;
   } else {
     swal(
-      "Te falta ingresar la utilidad neta",
+      "Te falta ingresar la ganancia total",
       "Ingrese, un valor, y vuelva a intentarlo",
       "error"
     );
