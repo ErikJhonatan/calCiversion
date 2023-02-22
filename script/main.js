@@ -38,8 +38,8 @@ function addInversor() {
             sectionResultCreate.classList.add('section_result');
             sectionResultCreate.innerHTML = `        <div class="section-result_information">
             <h1>Actividad: "${nameActivity}"</h1>
-            <p><b> Dinero total obtenido: </b> S/. ${totalMoneyInversion(personInversors)}</p>
-            <p><b> Dinero total invertido: </b> S/. ${numberUtility}</p>
+            <p><b> Dinero total obtenido: </b> S/. ${numberUtility}}</p>
+            <p><b> Dinero total invertido: </b> S/. ${totalMoneyInversion(personInversors)</p>
             <p>
               <b> Utilidad neta: </b>
               S/. ${numberUtility - totalMoneyInversion(personInversors)}
