@@ -9,3 +9,7 @@ El flujo de `script/main.js` captura la actividad, el resultado de la inversión
 ## Uso y contexto
 
 Sirve la carpeta como una web estática. No tiene backend ni persistencia documentada. Es un prototipo de aprendizaje relacionado por temática con [Qallariy-App](https://github.com/ErikJhonatan/Qallariy-App), que tiene una estructura más completa y persistencia en el navegador.
+
+## Cambios de comportamiento
+
+Los formularios validan nombres, importes positivos y entre 2 y 7 inversores antes de reemplazar los datos. Los cálculos se encuentran en `script/calculations.js`; los aportes se suman en céntimos.

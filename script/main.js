@@ -1,31 +1,25 @@
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+}
 let nameActivity = "";
 let numberUtility = "";
 let numberInvestors = "";
 let moneyTotal;
 const personInversors = [];
 function addInversor() {
-    let state;
-  const investor = document.querySelectorAll(".inversor");
-  console.log(investor);
-  for (i = 0; i < investor.length; i++) {
-    const name = investor[i].querySelector("#name").value;
-    const investmentAmount =
-      investor[i].querySelector("#investmentAmount").value;
-    if (name != "" && investmentAmount != "") {
-      personInversors.push({
-        name: name,
-        investmentAmount: parseFloat(investmentAmount), 
-      });
-        state = true;
-    } else {
-        swal(
-            "Te falta ingresar datos",
-            "Ingrese, un nombre y un valor, y vuelva a intentarlo",
-            "error"
-        );
-        state = false;
+    const investor = document.querySelectorAll('.inversor');
+    const entered = Array.from(investor, field => ({
+        name: field.querySelector('.investor-name').value.trim(),
+        investmentAmount: Number(field.querySelector('.investment-amount').value)
+    }));
+    if (!entered.length || entered.some(person => !person.name || !Number.isFinite(person.investmentAmount) || person.investmentAmount <= 0)) {
+        swal('Datos inválidos', 'Ingresa nombres y aportes positivos para todos los socios', 'error');
+        return;
     }
-}
+    try { totalMoneyInversion(entered); }
+    catch (error) { swal('Datos inválidos', error.message, 'error'); return; }
+    personInversors.splice(0, personInversors.length, ...entered);
+    const state = true;
     if (state){
         const main = document.querySelector('main');
         const divMain = main.querySelector('div');
@@ -37,7 +31,7 @@ function addInversor() {
             const sectionResultCreate = document.createElement('section');
             sectionResultCreate.classList.add('section_result');
             sectionResultCreate.innerHTML = `        <div class="section-result_information">
-            <h1>Actividad: "${nameActivity}"</h1>
+            <h1>Actividad: "${escapeHtml(nameActivity)}"</h1>
             <p><b> Dinero total obtenido: </b> S/. ${numberUtility}}</p>
             <p><b> Dinero total invertido: </b> S/. ${totalMoneyInversion(personInversors)}</p>
             <p>
@@ -50,13 +44,13 @@ function addInversor() {
             sectionResultInformationInversor.classList.add('section-result_information_inversor');
         sectionResultCreate.append(sectionResultInformationInversor);
         
-        for (person in personInversors){
+        for (const person in personInversors){
           const totalUtility = numberUtility - totalMoneyInversion(personInversors);
           const porcentage = calculatePorcentageUtility(totalMoneyInversion(personInversors), personInversors[person].investmentAmount);
           sectionResultInformationInversor.innerHTML +=`
           <div class="data-container_inversor">
             <h2>Inversor ${parseInt(person)+ 1}</h2>
-            <p><b>Nombre:</b> ${personInversors[person].name}</p>
+            <p><b>Nombre:</b> ${escapeHtml(personInversors[person].name)}</p>
             <p><b>Dinero invertido:</b> S/.${personInversors[person].investmentAmount}</p>
             <p><b>Porcentaje de la utilidad neta:</b> %${porcentage}</p>
             <p><b>Dinero invertido + utilidad neta:</b> S/.${moneyPlusInvestment(porcentage, personInversors[person].investmentAmount, totalUtility)}</p>
@@ -76,19 +70,6 @@ function addInversor() {
   
 
 }
-function calculatePorcentageUtility(total, money) {
-  const rta = (money * 100) / total;
-  return parseFloat(rta.toFixed(2));
-}
-function moneyPlusInvestment(percentage, money, utility) {
-  const rta = utility * percentage/100 + money;
-  return parseFloat(rta.toFixed(2));
-}
-function calculateRevenue(utility, percentage) {
-const rta = utility*percentage/100;
-return parseFloat(rta.toFixed(2));
-}
-
 function initialForm() {
   const sectionDate = document.querySelector(".section_date");
   sectionDate.innerHTML = "";
@@ -118,8 +99,8 @@ function initialForm() {
 }
 initialForm();
 function nextUtility() {
-  if (document.querySelector("#name_activity").value != "") {
-    console.log("cambio");
+  nameActivity = document.querySelector("#name_activity").value.trim();
+  if (nameActivity) {
     const labelActivity = document.querySelector("#label_activity_name");
     const inputActivity = document.querySelector("#name_activity");
     labelActivity.remove();
@@ -132,7 +113,7 @@ function nextUtility() {
     <label>
     Dinero total obtenido
     </label>
-    <input id="utility_money" value = "${numberUtility}" onchange = "saveUtilityValue()" id="utility" class="date_inversion" placeholder="Ejm. 10000"/>
+    <input id="utility_money" value = "${numberUtility}" onchange = "saveUtilityValue(event)" class="date_inversion" placeholder="Ejm. 10000"/>
     <div>
     <button onclick = "backActivity()" id="btnBackActivity" class="btn">
     Atras 
@@ -150,21 +131,22 @@ function nextUtility() {
     );
   }
 }
-function saveUtilityValue() {
-  numberUtility = parseInt(event.target.value);
+function saveUtilityValue(event) {
+  numberUtility = Number(event.target.value);
 }
-function saveNameActivity() {
+function saveNameActivity(event) {
   nameActivity = event.target.value;
 }
 function backActivity() {
   initialForm();
 }
 function nextNumberInversors() {
-  if (document.querySelector("#utility_money").value != "") {
+  numberUtility = Number(document.querySelector("#utility_money").value);
+  if (Number.isFinite(numberUtility) && numberUtility > 0) {
     const sectionDate = document.querySelector(".section_date");
     sectionDate.innerHTML = "";
     sectionDate.innerHTML = `
-    <select onchange="saveNumbersInversors()" id="numberInvestors" class="date_inversion" name="cantidad_inversonistas" id="">
+    <select onchange="saveNumbersInversors(event)" id="numberInvestors" class="date_inversion" name="cantidad_inversonistas">
     <option selected disabled value="">Cantidad de inversionistas</option>
     <option value="2">2</option>
     <option value="3">3</option>
@@ -192,14 +174,14 @@ function nextNumberInversors() {
 }
 function backUtility() {
   numberInvestors = 0;
-  renderNumberInversors();
+  document.querySelector('.inversor_section')?.remove();
   const sectionDate = document.querySelector(".section_date");
   sectionDate.innerHTML = "";
   sectionDate.innerHTML = `
     <label>
     Utilidad neta
     </label>
-    <input id="utility_money" value = "${numberUtility}" onchange = "saveUtilityValue()" id="utility" class="date_inversion" placeholder="Ejm. 1000"/>
+    <input id="utility_money" value = "${numberUtility}" onchange = "saveUtilityValue(event)" class="date_inversion" placeholder="Ejm. 1000"/>
     <div>
     <button onclick = "backActivity()" id="btnBackActivity" class="btn">
     Atras 
@@ -211,7 +193,7 @@ function backUtility() {
     `;
 }
 function renderNumberInversors() {
-  if (typeof numberInvestors == "number") {
+  if (Number.isSafeInteger(numberInvestors) && numberInvestors >= 2 && numberInvestors <= 7) {
     const mainDiv = document.querySelector("main");
 
     const inversorSection = document.querySelector(".inversor_section");
@@ -227,8 +209,8 @@ function renderNumberInversors() {
     for (let i = 0; i < numberInvestors; i++) {
       formInversors.innerHTML += `<div class="inversor">
             <h2>Inversor ${i + 1}</h2>
-            <input id="name" class="date_inversion" type="text" placeholder="Ingrese su nombre"/>
-            <input id="investmentAmount" class="date_inversion" type="number" placeholder="Ingrese el monto de la inversión"/>
+            <input class="date_inversion investor-name" aria-label="Nombre del inversor" type="text" placeholder="Ingrese su nombre"/>
+            <input class="date_inversion investment-amount" aria-label="Aporte del inversor" min="0.01" step="0.01" type="number" placeholder="Ingrese el monto de la inversión"/>
           </div>
           `;
     }
@@ -247,9 +229,6 @@ function renderNumberInversors() {
     );
   }
 }
-function saveNumbersInversors() {
-  numberInvestors = parseInt(event.target.value);
-}
-function totalMoneyInversion(array) {
-  return array.reduce((sum, item) => sum + item.investmentAmount, 0);
+function saveNumbersInversors(event) {
+  numberInvestors = Number(event.target.value);
 }
