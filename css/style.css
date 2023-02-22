@@ -199,7 +199,7 @@ main div section, .inversor{
     crear un grid con 3 columnas
     */
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-gap: 16px;
     width: 100%;
     max-width: 1200px;
