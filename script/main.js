@@ -16,7 +16,8 @@ function addInversor() {
         swal('Datos inválidos', 'Ingresa nombres y aportes positivos para todos los socios', 'error');
         return;
     }
-    try { totalMoneyInversion(entered); }
+    let shares;
+    try { shares = distributeRevenue(entered, numberUtility); }
     catch (error) { swal('Datos inválidos', error.message, 'error'); return; }
     personInversors.splice(0, personInversors.length, ...entered);
     const state = true;
@@ -32,7 +33,7 @@ function addInversor() {
             sectionResultCreate.classList.add('section_result');
             sectionResultCreate.innerHTML = `        <div class="section-result_information">
             <h1>Actividad: "${escapeHtml(nameActivity)}"</h1>
-            <p><b> Dinero total obtenido: </b> S/. ${numberUtility}}</p>
+            <p><b> Dinero total obtenido: </b> S/. ${numberUtility}</p>
             <p><b> Dinero total invertido: </b> S/. ${totalMoneyInversion(personInversors)}</p>
             <p>
               <b> Utilidad neta: </b>
@@ -45,16 +46,15 @@ function addInversor() {
         sectionResultCreate.append(sectionResultInformationInversor);
         
         for (const person in personInversors){
-          const totalUtility = numberUtility - totalMoneyInversion(personInversors);
-          const porcentage = calculatePorcentageUtility(totalMoneyInversion(personInversors), personInversors[person].investmentAmount);
+          const {percentage: porcentage, revenue, capital} = shares[person];
           sectionResultInformationInversor.innerHTML +=`
           <div class="data-container_inversor">
             <h2>Inversor ${parseInt(person)+ 1}</h2>
             <p><b>Nombre:</b> ${escapeHtml(personInversors[person].name)}</p>
             <p><b>Dinero invertido:</b> S/.${personInversors[person].investmentAmount}</p>
             <p><b>Porcentaje de la utilidad neta:</b> %${porcentage}</p>
-            <p><b>Dinero invertido + utilidad neta:</b> S/.${moneyPlusInvestment(porcentage, personInversors[person].investmentAmount, totalUtility)}</p>
-            <p><b>Ganancia: </b>S/ ${calculateRevenue(totalUtility, porcentage)}</p>
+            <p><b>Dinero invertido + utilidad neta:</b> S/.${capital}</p>
+            <p><b>Ganancia: </b>S/ ${revenue}</p>
           </div>
           `}
             main.append(sectionResultCreate);
@@ -142,7 +142,7 @@ function backActivity() {
 }
 function nextNumberInversors() {
   numberUtility = Number(document.querySelector("#utility_money").value);
-  if (Number.isFinite(numberUtility) && numberUtility > 0) {
+  if (document.querySelector('#utility_money').value.trim() && Number.isFinite(numberUtility) && numberUtility >= 0 && Number.isSafeInteger(Math.round(numberUtility * 100))) {
     const sectionDate = document.querySelector(".section_date");
     sectionDate.innerHTML = "";
     sectionDate.innerHTML = `
@@ -179,7 +179,7 @@ function backUtility() {
   sectionDate.innerHTML = "";
   sectionDate.innerHTML = `
     <label>
-    Utilidad neta
+    Dinero total obtenido
     </label>
     <input id="utility_money" value = "${numberUtility}" onchange = "saveUtilityValue(event)" class="date_inversion" placeholder="Ejm. 1000"/>
     <div>

@@ -20,3 +20,29 @@ function totalMoneyInversion(array) {
   if (!Number.isSafeInteger(total) || total <= 0) throw new Error('Capital inválido');
   return total / 100;
 }
+
+function distributeRevenue(investors, finalCapital) {
+  const total = Math.round(totalMoneyInversion(investors) * 100);
+  const final = Math.round(finalCapital * 100);
+  if (!Number.isFinite(finalCapital) || finalCapital < 0 || !Number.isSafeInteger(final)) throw new Error('Capital final inválido');
+  const profit = final - total;
+  const sign = profit < 0 ? -1 : 1;
+  const shares = investors.map((investor, index) => {
+    const invested = Math.round(investor.investmentAmount * 100);
+    if (!Number.isSafeInteger(invested) || invested <= 0) throw new Error('Aporte inválido');
+    const weighted = BigInt(Math.abs(profit)) * BigInt(invested);
+    return {index, invested, cents: Number(weighted / BigInt(total)), remainder: weighted % BigInt(total)};
+  });
+  let remaining = Math.abs(profit) - shares.reduce((sum, share) => sum + share.cents, 0);
+  const ranked = [...shares].sort((a, b) => a.remainder === b.remainder ? a.index - b.index : a.remainder > b.remainder ? -1 : 1);
+  for (const share of ranked) {
+    if (remaining-- <= 0) break;
+    share.cents += 1;
+  }
+  return shares.map(share => {
+    const revenue = sign * share.cents;
+    const capital = share.invested + revenue;
+    if (!Number.isSafeInteger(capital)) throw new Error('Resultado fuera de rango');
+    return {percentage: calculatePorcentageUtility(total / 100, share.invested / 100), revenue: revenue / 100, capital: capital / 100};
+  });
+}

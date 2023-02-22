@@ -13,3 +13,5 @@ Sirve la carpeta como una web estática. No tiene backend ni persistencia docume
 ## Cambios de comportamiento
 
 Los formularios validan nombres, importes positivos y entre 2 y 7 inversores antes de reemplazar los datos. Los cálculos se encuentran en `script/calculations.js`; los aportes se suman en céntimos.
+
+El reparto conserva la utilidad total en centavos, incluidos los residuos de redondeo y la pérdida total cuando el capital final es cero.
